@@ -2,7 +2,7 @@ use super::enums::{Color, Position};
 use super::board_map::BoardMap;
 use super::castles_state::CastlesState;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct GameState {
     pub board: BoardMap,
     pub whose_move: Color,

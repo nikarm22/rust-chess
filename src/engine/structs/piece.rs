@@ -1,8 +1,10 @@
 use super::enums::{PieceType, Color};
-use std::fmt; 
-// use std::char::from_u32;
+use std::fmt;
+use std::char::from_u32;
+use std::clone::Clone;
 
 #[derive(Debug)]
+#[derive(Clone)]
 pub struct Piece {
     pub piece_type: PieceType,
     pub color: Color,
@@ -45,34 +47,34 @@ impl Piece {
     }
 }
 
-// impl fmt::Display for Piece {
-//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//         let mut unicode_index: u32 = 0x2654;
-
-//         match self.piece_type {
-//             PieceType::King => { unicode_index += 0 },
-//             PieceType::Queen => { unicode_index += 1 },
-//             PieceType::Rook => { unicode_index += 2 },
-//             PieceType::Bishop => { unicode_index += 3 },
-//             PieceType::Knight => { unicode_index += 4 },
-//             PieceType::Pawn => { unicode_index += 5 },
-//         }
-
-//         if self.color == Color::Black {
-//             unicode_index += 6
-//         }
-
-//         match from_u32(unicode_index) {
-//             Some(character) => {
-//                 write!(f, "{}", character)
-//             },
-//             None => {write!(f, "{}", ' ')},
-//         }
-//     }
-// }
-
 impl fmt::Display for Piece {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.to_fen_char())
+        let mut unicode_index: u32 = 0x2654;
+
+        match self.piece_type {
+            PieceType::King => { unicode_index += 0 },
+            PieceType::Queen => { unicode_index += 1 },
+            PieceType::Rook => { unicode_index += 2 },
+            PieceType::Bishop => { unicode_index += 3 },
+            PieceType::Knight => { unicode_index += 4 },
+            PieceType::Pawn => { unicode_index += 5 },
+        }
+
+        if self.color == Color::Black {
+            unicode_index += 6
+        }
+
+        match from_u32(unicode_index) {
+            Some(character) => {
+                write!(f, "{}", character)
+            },
+            None => {write!(f, "{}", ' ')},
+        }
     }
 }
+
+// impl fmt::Display for Piece {
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//         write!(f, "{}", self.to_fen_char())
+//     }
+// }

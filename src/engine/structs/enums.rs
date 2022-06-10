@@ -1,11 +1,10 @@
-#[derive(Debug)]
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Color {
     Black,
     White,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum PieceType {
     Pawn,
     King,
@@ -15,4 +14,4 @@ pub enum PieceType {
     Bishop,
 }
 
-pub type Position = (u8, u8);
+pub type Position = (i8, i8);

@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct CastlesState {
     pub white_king: bool,
     pub white_queen: bool,
@@ -18,7 +18,7 @@ impl CastlesState {
 
     pub fn from_fen_str(fen_str: String) -> CastlesState {
         let mut castles = CastlesState::new();
-        
+
         for i in fen_str.chars() {
             match i {
                 'K' => { castles.white_king = true },

@@ -2,6 +2,14 @@ use super::structs::game_state::GameState;
 use super::structs::enums::Color;
 use colored::Colorize;
 
+#[macro_export]
+macro_rules! clear_view {
+    () => {
+        print!("\x1B[2J");
+        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+    };
+}
+
 pub fn render_board (game_state: &mut GameState) {
     println!("+-+-+---+---+---+---+---+---+---+---+-+-+");
     println!("| | | A | B | C | D | E | F | G | H | | |");
@@ -36,12 +44,4 @@ pub fn render_board (game_state: &mut GameState) {
     println!("+-+-+---+---+---+---+---+---+---+---+-+-+");
     println!("| | | A | B | C | D | E | F | G | H | | |");
     println!("+-+-+---+---+---+---+---+---+---+---+-+-+");
-}
-
-#[macro_export]
-macro_rules! clear_view {
-    () => {
-      print!("\x1B[2J");
-      print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-    };
 }

@@ -11,14 +11,14 @@ fn parse_position(position_string: String, state: &mut GameState) {
         .collect();
 
     for (row_index, row) in rows.iter().enumerate() {
-        let mut current_column: u8 = 0;
+        let mut current_column: i8 = 0;
         for letter in row.chars() {
             match letter.to_digit(10) {
                 Some(value) => {
-                    current_column += (value - 1) as u8;
+                    current_column += (value - 1) as i8;
                 },
                 None => {
-                    let pos: Position = (row_index as u8, current_column);
+                    let pos: Position = (row_index as i8, current_column);
                     let piece = Piece::from_fen_char(letter);
                     state.board.insert(pos, piece);
                 }
