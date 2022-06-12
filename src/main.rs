@@ -1,5 +1,6 @@
 mod engine;
 
+use crate::engine::move_generator::generate_valid_moves;
 use crate::engine::structs::enums::Position;
 use std::collections::HashSet;
 use crate::engine::move_generator::generate_moves;
@@ -21,9 +22,8 @@ fn main() {
 
     parse(contents, game_state);
 
-    game_state.board.insert(std_pos_to_couple(String::from("e4")), Piece::new(PieceType::Pawn, Color::White));
-    game_state.board.insert(std_pos_to_couple(String::from("d5")), Piece::new(PieceType::Pawn, Color::Black));
-    game_state.board.insert(std_pos_to_couple(String::from("f5")), Piece::new(PieceType::Pawn, Color::White));
+    game_state.board.insert(std_pos_to_couple(String::from("h4")), Piece::new(PieceType::Bishop, Color::Black));
+    game_state.board.remove(&std_pos_to_couple(String::from("f2")));
 
     loop {
         // clear_view!();
@@ -45,7 +45,7 @@ fn main() {
         let from = std_pos_to_couple(from);
         let piece = game_state.board.get(&from).unwrap().clone();
 
-        let moves = generate_moves(game_state, piece, from);
+        let moves = generate_valid_moves(game_state, piece, from);
 
         for i in 0..8 {
             for j in 0..8 {

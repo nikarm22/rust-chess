@@ -3,8 +3,7 @@ use std::fmt;
 use std::char::from_u32;
 use std::clone::Clone;
 
-#[derive(Debug)]
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Piece {
     pub piece_type: PieceType,
     pub color: Color,
