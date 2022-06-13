@@ -1,9 +1,8 @@
 mod engine;
 
-use crate::engine::move_generator::generate_valid_moves;
 use crate::engine::structs::enums::Position;
 use std::collections::HashSet;
-use crate::engine::move_generator::generate_moves;
+use crate::engine::move_generator::{generate_destinations, generate_valid_destinations};
 use crate::engine::structs::piece::Piece;
 use crate::engine::structs::enums::{PieceType, Color};
 use engine::structs::game_state::GameState;
@@ -23,7 +22,8 @@ fn main() {
     parse(contents, game_state);
 
     game_state.board.insert(std_pos_to_couple(String::from("h4")), Piece::new(PieceType::Bishop, Color::Black));
-    game_state.board.remove(&std_pos_to_couple(String::from("f2")));
+    game_state.board.insert(std_pos_to_couple(String::from("d4")), Piece::new(PieceType::Rook, Color::White));
+    // game_state.board.remove(&std_pos_to_couple(String::from("f2")));
 
     loop {
         // clear_view!();
@@ -43,20 +43,21 @@ fn main() {
 
         let from = split.remove(0);
         let from = std_pos_to_couple(from);
-        let piece = game_state.board.get(&from).unwrap().clone();
+        if let Some(piece) = game_state.board.get(&from) {
+            let moves = generate_destinations(game_state, piece.clone(), from, false);
+            
 
-        let moves = generate_valid_moves(game_state, piece, from);
-
-        for i in 0..8 {
-            for j in 0..8 {
-                let hash: HashSet<Position> = HashSet::from_iter(moves.iter().cloned());
-                if hash.contains(&(i, j)) {
-                    print!("X");
-                } else {
-                    print!("O");
+            for i in 0..8 {
+                for j in 0..8 {
+                    let hash: HashSet<Position> = HashSet::from_iter(moves.iter().cloned());
+                    if hash.contains(&(i, j)) {
+                        print!("X");
+                    } else {
+                        print!("O");
+                    }
                 }
+                println!("");
             }
-            println!("");
         }
     }
 }

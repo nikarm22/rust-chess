@@ -1,4 +1,4 @@
-use super::structs::enums::{Position, Color};
+use super::structs::enums::Position;
 
 pub fn std_pos_to_couple (std_pos: String) -> Position {
   let bytes = std_pos.as_bytes();
