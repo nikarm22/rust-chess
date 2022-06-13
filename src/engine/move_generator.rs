@@ -117,8 +117,8 @@ pub fn generate_destinations_queen(game_state: &mut GameState, piece: Piece, pos
 
 pub fn generate_destinations_king(game_state: &mut GameState, piece: Piece, position: Position) -> HashSet<Position> {
     let mut possible_positions: HashSet<Position> = HashSet::new();
-    for i in -1..1 {
-        for j in -1..1 {
+    for i in -1..2 {
+        for j in -1..2 {
             if i != 0 || j != 0 {
                 let next_position = (position.0 + i, position.1 + j);
                 let move_status = is_possible_destination(game_state, piece.clone(), next_position);
@@ -134,8 +134,8 @@ pub fn generate_destinations_king(game_state: &mut GameState, piece: Piece, posi
 
 pub fn generate_destinations_knight(game_state: &mut GameState, piece: Piece, position: Position) -> HashSet<Position> {
     let mut possible_positions: HashSet<Position> = HashSet::new();
-    for i in -2..2 {
-        for j in -2..2 {
+    for i in -2..3 {
+        for j in -2..3 {
             if (i as i8).abs() + (j as i8).abs() == 3 {
                 let next_position = (position.0 + i, position.1 + j);
                 let move_status = is_possible_destination(game_state, piece.clone(), next_position);

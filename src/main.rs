@@ -1,15 +1,10 @@
 mod engine;
 
-use crate::engine::structs::enums::Position;
-use std::collections::HashSet;
-use crate::engine::move_generator::{generate_destinations, generate_valid_destinations};
-use crate::engine::structs::piece::Piece;
-use crate::engine::structs::enums::{PieceType, Color};
 use engine::structs::game_state::GameState;
-use engine::parser::parse;
-use engine::utils::std_pos_to_couple;
+use engine::parser::{parse, parse_move};
 use engine::renderer::render_board;
-use std::{thread, time, fs, io};
+use engine::state_manager::execute_move;
+use std::{fs, io};
 
 fn main() {
     let contents = &mut fs::read_to_string("./src/static/initial.fen")
@@ -21,43 +16,23 @@ fn main() {
 
     parse(contents, game_state);
 
-    game_state.board.insert(std_pos_to_couple(String::from("h4")), Piece::new(PieceType::Bishop, Color::Black));
-    game_state.board.insert(std_pos_to_couple(String::from("d4")), Piece::new(PieceType::Rook, Color::White));
-    // game_state.board.remove(&std_pos_to_couple(String::from("f2")));
-
     loop {
         // clear_view!();
         render_board(game_state);
 
         let mut s = String::new();
         io::stdin().read_line(&mut s).expect("Did not enter a correct string");
-        let split: &mut Vec<String> = &mut s.trim().split(":").map(str::to_string).collect();
 
-        if split.len() != 2 {
-            println!("Invalid move!");
-            let second = time::Duration::from_millis(1000);
-
-            thread::sleep(second);
-            continue;
-        }
-
-        let from = split.remove(0);
-        let from = std_pos_to_couple(from);
-        if let Some(piece) = game_state.board.get(&from) {
-            let moves = generate_destinations(game_state, piece.clone(), from, false);
-            
-
-            for i in 0..8 {
-                for j in 0..8 {
-                    let hash: HashSet<Position> = HashSet::from_iter(moves.iter().cloned());
-                    if hash.contains(&(i, j)) {
-                        print!("X");
-                    } else {
-                        print!("O");
-                    }
-                }
-                println!("");
-            }
+        let (from, to) = match parse_move(s) {
+            Ok(t) => t,
+            Err(err) => {
+                println!("Error while parsing: {}", err);
+                continue;
+            },
+        };
+ 
+        if let Err(err) = execute_move(game_state, from, to) {
+            println!("Error while executing the move: {}", err);
         }
     }
 }
