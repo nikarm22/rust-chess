@@ -2,9 +2,9 @@ mod engine;
 
 use engine::structs::game_state::GameState;
 use engine::parser::{parse, parse_move};
+use engine::utils::read_ln;
 use engine::renderer::render_board;
-use engine::state_manager::execute_move;
-use std::{fs, io};
+use std::fs;
 
 fn main() {
     let contents = &mut fs::read_to_string("./src/static/initial.fen")
@@ -16,14 +16,23 @@ fn main() {
 
     parse(contents, game_state);
 
+    // FIXME: Implement castlign and promotion
+    // FIXME: Checkmate implementation
+    // TODO: add to fen_string functionality
+    // TODO: add short position syntax (Disambiguate :( )
+    // TODO: Basic sfml integration
+    // TODO: UI, Click, highlight
+    // TODO: Standardized API
+    // TODO: Custom evaluation and bot
+    // TODO: Talking with stockfish
+    // TODO: Menu audio etc.
+    // TODO: Undo move.
     loop {
-        // clear_view!();
+        clear_view!();
         render_board(game_state);
 
-        let mut s = String::new();
-        io::stdin().read_line(&mut s).expect("Did not enter a correct string");
-
-        let (from, to) = match parse_move(s) {
+        let move_str = read_ln();
+        let (from, to) = match parse_move(move_str) {
             Ok(t) => t,
             Err(err) => {
                 println!("Error while parsing: {}", err);
@@ -31,7 +40,7 @@ fn main() {
             },
         };
  
-        if let Err(err) = execute_move(game_state, from, to) {
+        if let Err(err) = game_state.execute_move(from, to) {
             println!("Error while executing the move: {}", err);
         }
     }
