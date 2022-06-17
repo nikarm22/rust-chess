@@ -148,7 +148,7 @@ pub fn generate_destinations_knight(game_state: &GameState, piece: Piece, positi
     possible_positions
 }
 
-fn generate_attacked_fields(game_state: &GameState, color: Color) -> HashSet<Position> {
+pub fn generate_attacked_fields(game_state: &GameState, color: Color) -> HashSet<Position> {
     let mut attacked_fields: HashSet<Position> = HashSet::new();
     game_state.board.clone().iter().filter(|(_, piece)| piece.color != color).for_each(|(pos, piece)| {
         attacked_fields.extend(&generate_destinations(game_state, piece.clone(), pos.clone(), true));

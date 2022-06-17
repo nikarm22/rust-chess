@@ -16,10 +16,9 @@ fn main() {
 
     parse(contents, game_state);
 
-    // FIXME: Implement castlign and promotion
-    // FIXME: Checkmate implementation
+    // FIXME: Implement castlign
     // TODO: add to fen_string functionality
-    // TODO: add short position syntax (Disambiguate :( )
+    // TODO: add short move syntax (Disambiguate :( )
     // TODO: Basic sfml integration
     // TODO: UI, Click, highlight
     // TODO: Standardized API
@@ -32,15 +31,15 @@ fn main() {
         render_board(game_state);
 
         let move_str = read_ln();
-        let (from, to) = match parse_move(move_str) {
+        let (from, to, prom_piece) = match parse_move(move_str) {
             Ok(t) => t,
             Err(err) => {
                 println!("Error while parsing: {}", err);
                 continue;
             },
         };
- 
-        if let Err(err) = game_state.execute_move(from, to) {
+
+        if let Err(err) = game_state.execute_move(from, to, prom_piece) {
             println!("Error while executing the move: {}", err);
         }
     }

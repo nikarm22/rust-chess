@@ -4,7 +4,7 @@ use super::structs::enums::{Color, Position};
 use super::structs::game_state::GameState;
 use super::utils::std_pos_to_couple;
 
-pub fn parse_move(input: String) -> Result<(Position, Position), &'static str> {
+pub fn parse_move(input: String) -> Result<(Position, Position, Option<Piece>), &'static str> {
     let split: &mut Vec<String> = &mut input.trim().split(":").map(str::to_string).collect();
 
     if split.len() != 2 {
@@ -15,10 +15,18 @@ pub fn parse_move(input: String) -> Result<(Position, Position), &'static str> {
     let from = std_pos_to_couple(from);
     let to = split.remove(0);
     let to = std_pos_to_couple(to);
+    let promotion_piece = if split.len() == 1 {
+        let promotion = split.remove(0);
+        let fen_char = promotion.as_bytes()[0] as char;
+        Some(Piece::from_fen_char(fen_char))
+    } else {
+        None
+    };
+
 
     from.and_then(
         |f| to.and_then(
-            |t| Ok((f, t))
+            |t| Ok((f, t, promotion_piece))
         )
     )
 }

@@ -14,4 +14,11 @@ pub enum PieceType {
     Bishop,
 }
 
+#[derive(Debug, Clone)]
+pub enum GameResult {
+    WhiteWin,
+    BlackWin,
+    Stalement,
+}
+
 pub type Position = (i8, i8);

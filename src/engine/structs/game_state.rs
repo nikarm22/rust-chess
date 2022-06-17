@@ -1,4 +1,7 @@
-use super::enums::{Color, Position, PieceType};
+use crate::engine::move_generator::generate_attacked_fields;
+use std::collections::HashSet;
+use super::enums::{Color, Position, PieceType, GameResult};
+use super::piece::Piece;
 use super::board_map::BoardMap;
 use super::castles_state::CastlesState;
 use crate::engine::move_generator::generate_valid_destinations;
@@ -11,6 +14,7 @@ pub struct GameState {
     pub en_pasant_position: Option<Position>,
     pub half_moves: u16,
     pub full_moves: u16,
+    pub result: Option<GameResult>,
 }
 
 impl GameState {
@@ -22,6 +26,7 @@ impl GameState {
             full_moves: 1,
             half_moves: 0,
             whose_move: Color::White,
+            result: None
         }
     }
 
@@ -37,13 +42,17 @@ impl GameState {
         new_state
     }
 
-    pub fn execute_move(&mut self, from: Position, to: Position) -> Result<(), &'static str> {
-        let piece = self.board.get(&from);
+    pub fn execute_move(&mut self, from: Position, to: Position, prom_piece: Option<Piece>) -> Result<(), &'static str> {
+        if self.result.is_some() {
+            return Err("Game is ended!");
+        }
 
-        let piece = match piece {
-            Some(p) => p.clone(),
-            None => { return Err("Piece is missing from source square!") },
-        };
+        let piece = self.board.get(&from).ok_or("Piece is missing from source square!")?;
+
+        if piece.color != self.whose_move {
+            return Err("Not your turn!");
+        }
+
         let clone_piece = piece.clone();
         let valid_moves = generate_valid_destinations(self, piece.clone(), from);
 
@@ -56,11 +65,10 @@ impl GameState {
         }
 
         // Executing move
-        let piece = match self.board.remove(&from) {
-            Some(p) => p,
-            None => { return Err("Piece disappeared somehow!") },
-        };
+        let old_piece = self.board.remove(&from);
+        let piece = prom_piece.or(old_piece).ok_or("Piece disappeared somehow!")?;
         let to_piece = self.board.remove(&to);
+
         self.board.insert(to, piece);
 
         // Increment move counter
@@ -84,6 +92,32 @@ impl GameState {
 
         // Update turn
         self.whose_move = if clone_piece.color == Color::White { Color::Black } else { Color::White };
+
+        self.check_game_ended();
+
         Ok(())
+    }
+
+    pub fn check_game_ended(&mut self) {
+        let mut valid_moves: HashSet<Position> = HashSet::new();
+        let current_color = self.whose_move;
+        self.board
+            .iter()
+            .filter(|(_, piece)| piece.color == current_color)
+            .for_each(|(pos, piece)| {
+                valid_moves.extend(generate_valid_destinations(self, piece.clone(), *pos));
+            });
+
+        if valid_moves.len() == 0 {
+            // TODO: Move to separate method is_under_check
+            let attacked_fields = generate_attacked_fields(self, current_color);
+            if let Some(king_pos) = self.find_king(current_color) {
+                if attacked_fields.contains(&king_pos) {
+                    self.result = if current_color == Color::White { Some(GameResult::BlackWin) } else { Some(GameResult::WhiteWin) };
+                } else {
+                    self.result = Some(GameResult::Stalement);
+                }
+            }
+        }
     }
 }
